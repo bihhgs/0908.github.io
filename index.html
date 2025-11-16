@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>立体思维挑战</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .description {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 15px;
+        }
+        
+        .game-area {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .scene-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 300px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #cube-container {
+            width: 200px;
+            height: 200px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 1s;
+        }
+        
+        .cube-face {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            font-weight: bold;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .front { transform: translateZ(100px); }
+        .back { transform: translateZ(-100px) rotateY(180deg); }
+        .right { transform: rotateY(90deg) translateZ(100px); }
+        .left { transform: rotateY(-90deg) translateZ(100px); }
+        .top { transform: rotateX(90deg) translateZ(100px); }
+        .bottom { transform: rotateX(-90deg) translateZ(100px); }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            background: #4e54c8;
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+        
+        button:hover {
+            background: #3f43a8;
+            transform: translateY(-2px);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .question {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .option {
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .option:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.03);
+        }
+        
+        .option.correct {
+            background: rgba(76, 175, 80, 0.3);
+            border: 2px solid #4CAF50;
+        }
+        
+        .option.wrong {
+            background: rgba(244, 67, 54, 0.3);
+            border: 2px solid #F44336;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .instructions {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        
+        .instructions h2 {
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+        
+        .instructions ul {
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+        
+        @media (max-width: 600px) {
+            .options {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .cube-face {
+                width: 150px;
+                height: 150px;
+                font-size: 1.5rem;
+            }
+            
+            .front { transform: translateZ(75px); }
+            .back { transform: translateZ(-75px) rotateY(180deg); }
+            .right { transform: rotateY(90deg) translateZ(75px); }
+            .left { transform: rotateY(-90deg) translateZ(75px); }
+            .top { transform: rotateX(90deg) translateZ(75px); }
+            .bottom { transform: rotateX(-90deg) translateZ(75px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>立体思维挑战</h1>
+            <p class="description">观察3D立方体，回答关于空间关系的问题</p >
+        </header>
+        
+        <div class="game-area">
+            <div class="scene-container">
+                <div id="cube-container">
+                    <div class="cube-face front">A</div>
+                    <div class="cube-face back">B</div>
+                    <div class="cube-face right">C</div>
+                    <div class="cube-face left">D</div>
+                    <div class="cube-face top">E</div>
+                    <div class="cube-face bottom">F</div>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <button id="rotate-x">绕X轴旋转</button>
+                <button id="rotate-y">绕Y轴旋转</button>
+                <button id="rotate-z">绕Z轴旋转</button>
+                <button id="reset-view">重置视图</button>
+            </div>
+            
+            <div class="question">
+                <h2 id="question-text">当立方体绕Y轴旋转90度后，哪个面会出现在前面？</h2>
+            </div>
+            
+            <div class="options">
+                <div class="option" data-answer="A">A面</div>
+                <div class="option" data-answer="B">B面</div>
+                <div class="option" data-answer="C">C面</div>
+                <div class="option" data-answer="D">D面</div>
+            </div>
+            
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-value" id="score">0</div>
+                    <div class="stat-label">得分</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="level">1</div>
+                    <div class="stat-label">关卡</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="streak">0</div>
+                    <div class="stat-label">连续正确</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h2>游戏说明</h2>
+            <ul>
+                <li>观察3D立方体，想象它的空间关系</li>
+                <li>使用旋转按钮从不同角度查看立方体</li>
+                <li>回答关于立方体旋转后各面位置的问题</li>
+                <li>连续答对可提高得分和关卡</li>
+                <li>错误答案会重置连续正确计数</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const cube = document.getElementById('cube-container');
+            const questionText = document.getElementById('question-text');
+            const options = document.querySelectorAll('.option');
+            const scoreDisplay = document.getElementById('score');
+            const levelDisplay = document.getElementById('level');
+            const streakDisplay = document.getElementById('streak');
+            
+            const rotateXBtn = document.getElementById('rotate-x');
+            const rotateYBtn = document.getElementById('rotate-y');
+            const rotateZBtn = document.getElementById('rotate-z');
+            const resetViewBtn = document.getElementById('reset-view');
+            
+            // 游戏状态
+            let score = 0;
+            let level = 1;
+            let streak = 0;
+            let currentRotation = { x: 0, y: 0, z: 0 };
+            let correctAnswer = '';
+            
+            // 初始化游戏
+            initGame();
+            
+            // 事件监听
+            rotateXBtn.addEventListener('click', () => rotateCube('x', 90));
+            rotateYBtn.addEventListener('click', () => rotateCube('y', 90));
+            rotateZBtn.addEventListener('click', () => rotateCube('z', 90));
+            resetViewBtn.addEventListener('click', resetView);
+            
+            options.forEach(option => {
+                option.addEventListener('click', function() {
+                    checkAnswer(this.dataset.answer);
+                });
+            });
+            
+            // 旋转立方体
+            function rotateCube(axis, degrees) {
+                currentRotation[axis] += degrees;
+                updateCubeTransform();
+            }
+            
+            // 更新立方体变换
+            function updateCubeTransform() {
+                cube.style.transform = `rotateX(${currentRotation.x}deg) rotateY(${currentRotation.y}deg) rotateZ(${currentRotation.z}deg)`;
+            }
+            
+            // 重置视图
+            function resetView() {
+                currentRotation = { x: 0, y: 0, z: 0 };
+                updateCubeTransform();
+            }
+            
+            // 初始化游戏
+            function initGame() {
+                generateQuestion();
+                updateDisplays();
+            }
+            
+            // 生成问题
+            function generateQuestion() {
+                const questionTypes = [
+                    {
+                        text: "当立方体绕Y轴旋转90度后，哪个面会出现在前面？",
+                        rotation: { x: 0, y: 90, z: 0 },
+                        answer: "C"
+                    },
+                    {
+                        text: "当立方体绕X轴旋转90度后，哪个面会出现在顶部？",
+                        rotation: { x: 90, y: 0, z: 0 },
+                        answer: "F"
+                    },
+                    {
+                        text: "当立方体绕Z轴旋转180度后，哪个面会出现在右侧？",
+                        rotation: { x: 0, y: 0, z: 180 },
+                        answer: "D"
+                    },
+                    {
+                        text: "先绕Y轴旋转90度，再绕X轴旋转90度后，哪个面会出现在前面？",
+                        rotation: { x: 90, y: 90, z: 0 },
+                        answer: "F"
+                    },
+                    {
+                        text: "当立方体绕Y轴旋转-90度后，哪个面会出现在前面？",
+                        rotation: { x: 0, y: -90, z: 0 },
+                        answer: "D"
+                    }
+                ];
+                
+                const randomQuestion = questionTypes[Math.floor(Math.random() * questionTypes.length)];
+                questionText.textContent = randomQuestion.text;
+                correctAnswer = randomQuestion.answer;
+                
+                // 重置选项样式
+                options.forEach(option => {
+                    option.classList.remove('correct', 'wrong');
+                });
+            }
+            
+            // 检查答案
+            function checkAnswer(selectedAnswer) {
+                const isCorrect = selectedAnswer === correctAnswer;
+                
+                // 标记正确/错误答案
+                options.forEach(option => {
+                    if (option.dataset.answer === correctAnswer) {
+                        option.classList.add('correct');
+                    } else if (option.dataset.answer === selectedAnswer && !isCorrect) {
+                        option.classList.add('wrong');
+                    }
+                });
+                
+                // 更新游戏状态
+                if (isCorrect) {
+                    score += 10 * level;
+                    streak++;
+                    if (streak % 5 === 0) {
+                        level++;
+                    }
+                } else {
+                    streak = 0;
+                }
+                
+                updateDisplays();
+                
+                // 延迟后生成新问题
+                setTimeout(() => {
+                    generateQuestion();
+                }, 2000);
+            }
+            
+            // 更新显示
+            function updateDisplays() {
+                scoreDisplay.textContent = score;
+                levelDisplay.textContent = level;
+                streakDisplay.textContent = streak;
+            }
+        });
+    </script>
+</body>
+</html>
